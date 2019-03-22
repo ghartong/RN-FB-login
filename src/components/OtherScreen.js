@@ -11,12 +11,8 @@ export default class OtherScreen extends React.Component {
             <View style={styles.container}>
                 <Text>This is some other page.</Text>
                 <Button
-                    title="Go to first counter screen"
+                    title="Play with a counter screen"
                     onPress={() => this.props.navigation.navigate('Counter')}
-                    />
-                <Button
-                    title="Go to static count screen"
-                    onPress={() => this.props.navigation.navigate('StaticCounter')}
                     />
             </View>
         );
