@@ -2,11 +2,20 @@ import * as React from 'react'
 import { StyleSheet, View, Text, Button } from 'react-native'
 import { connect } from 'react-redux'
 import {actions} from '../../reducers/counterReducer'
+import {actions as userActions} from '../../reducers/userReducer'
 
 class Counter extends React.Component {
     static navigationOptions = {
         title: 'Counter!',
     };
+
+    constructor(props) {
+        super(props)
+    }
+
+    componentDidMount() {
+        this.props.setLoggedIn(true)
+    }
 
     render() {
         return (
@@ -41,8 +50,8 @@ const styles = StyleSheet.create({
 // Connect the screens to Redux
 const getCounterState = state => {
     return {
-      count: state.counterReducer.count
+      count: state.counter.count
     }
   }
-export default connect(getCounterState, Object.assign({}, actions) )(Counter);
+export default connect(getCounterState, Object.assign({}, actions, userActions) )(Counter);
   

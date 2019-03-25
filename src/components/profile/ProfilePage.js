@@ -1,32 +1,17 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Text, SafeAreaView, AsyncStorage } from 'react-native'
+import { StyleSheet, View, Text, SafeAreaView } from 'react-native'
 import { facebookService } from '../../library/FacebookService'
 import { Avatar } from 'react-native-elements'
+import { connect } from 'react-redux'
 
-export default class ProfilePage extends React.Component {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            profile: null
-        }
-    }
-
+class ProfilePage extends React.Component {
     componentDidMount() {
-        console.log('<<<<<<<< Mounting')
         this.loadData()
     }
 
     async loadData() {
-        console.log('<<<<<<<< Loading Data')
-        if (!this.state.profile) {
-            console.log('<<<<<<<< No profile found so go get it')
-
-            const profile = await facebookService.fetchProfile()
-
-            this.setState({
-                profile: profile
-            })    
+        if (!this.props.fbProfile.id) {
+            await facebookService.fetchProfile()
         }
     }
 
@@ -41,7 +26,8 @@ export default class ProfilePage extends React.Component {
             }
         })
 
-        const profile = this.state.profile
+        const profile = this.props.fbProfile
+
         return (
             <SafeAreaView>
                 <View style={styles.container}>
@@ -52,8 +38,7 @@ export default class ProfilePage extends React.Component {
     }
 
     logout = async () => {
-        await AsyncStorage.clear();
-        this.props.navigation.navigate('Auth');
+        //this.props.navigation.navigate('Auth');
     }
 
 }
@@ -101,3 +86,11 @@ class ProfileView extends Component {
         )
     }
 }
+
+// Connect the screens to Redux
+const getProfileState = state => {
+    return {
+      fbProfile: state.user.fb
+    }
+  }
+export default connect(getProfileState)(ProfilePage);

@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, AsyncStorage } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { facebookService } from '../../library/FacebookService'
 
 export default class LogInPage extends React.Component {
@@ -18,7 +18,6 @@ export default class LogInPage extends React.Component {
     }
 
     _signInAsync = async (accessToken) => {
-        await AsyncStorage.setItem('userToken', accessToken);
         this.props.navigation.navigate('App');
     };
 }

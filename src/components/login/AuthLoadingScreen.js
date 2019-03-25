@@ -1,25 +1,43 @@
 import * as React from 'react'
-import { StyleSheet, View, ActivityIndicator, AsyncStorage, StatusBar } from 'react-native'
+import { StyleSheet, View, ActivityIndicator, StatusBar, Text } from 'react-native'
+import { connect } from 'react-redux'
+import {actions as userActions} from '../../reducers/userReducer'
+import FBSDK from 'react-native-fbsdk'
+const { AccessToken } = FBSDK
 
-export default class AuthLoadingScreen extends React.Component {
-    constructor() {
+
+class AuthLoadingScreen extends React.Component {
+    constructor(props) {
         super();
-        this._bootstrapAsync();
+        this._checkForLogin(props);
     }
 
-    // Fetch the token from storage then navigate to our appropriate place
-    _bootstrapAsync = async () => {
-        const userToken = await AsyncStorage.getItem('userToken');
+    _checkForLogin = (props) => {
+        // check for state logged In
+        if (props.isLoggedIn) {
+            props.navigation.navigate('App')
+        }
 
-        // This will switch to the App screen or Auth screen and this loading
-        // screen will be unmounted and thrown away.
-        this.props.navigation.navigate(userToken ? 'App' : 'Auth');
+        // check for FB login
+        AccessToken.getCurrentAccessToken()
+            .then((data) => {
+                if (data && data.accessToken) {
+                    props.setLoggedIn(true)
+                    props.navigation.navigate('App')
+                }
+            })
+            .catch(error => {
+                console.log(error)
+            })
+
+        props.navigation.navigate('Auth');
     };
 
     // Render any loading content that you like here
     render() {
         return (
             <View style={styles.container}>
+                <Text>Logged in: {this.props.isLoggedIn.toString()}</Text>
                 <ActivityIndicator />
                 <StatusBar barStyle="default" />
             </View>
@@ -34,3 +52,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 })
+
+// Connect the screens to Redux
+const getAuthLoadingScreenState = state => {
+    return {
+        isLoggedIn: state.user.loggedIn
+    }
+}
+export default connect(getAuthLoadingScreenState,  Object.assign({}, userActions))(AuthLoadingScreen);

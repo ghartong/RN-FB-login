@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
 // Connect the screens to Redux
 const getStaticCounterState = state => {
     return {
-        count: state.counterReducer.count
+        count: state.counter.count
     }
 }
 export default connect(getStaticCounterState)(StaticCounter)

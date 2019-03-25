@@ -1,5 +1,6 @@
 import React from 'react'
 import FBSDK from 'react-native-fbsdk'
+import store from '../store'
 
 const { LoginButton, AccessToken, GraphRequest, GraphRequestManager } = FBSDK
 
@@ -20,6 +21,8 @@ class FacebookService {
                     } else {
                         AccessToken.getCurrentAccessToken()
                             .then((data) => {
+                                store.dispatch({type: 'SET_LOGGED_IN', msg: true})
+
                                 callback(data.accessToken)
                             })
                             .catch(error => {
@@ -33,7 +36,8 @@ class FacebookService {
     makeLogoutButton(callback) {
         return (
             <LoginButton onLogoutFinished={() => {
-                callback()
+                store.dispatch({type: 'SET_LOGGED_IN', msg: false})
+                props.navigation.navigate('Auth');
             }} />
         )
     }
@@ -47,6 +51,11 @@ class FacebookService {
                     if (result) {
                         let profile = result
                         profile.avatar = `https://graph.facebook.com/${result.id}/picture`
+
+                        store.dispatch({
+                            type: 'SET_USER_FB',
+                            fb: {...profile}
+                        })
                         resolve(profile)
                     } else {
                         reject(error)
